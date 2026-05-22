@@ -335,12 +335,6 @@ const exportPDF = () => {
     <div className="p-6">
 
       <div className="flex justify-between mb-4">
-        <Button
-          onClick={()=>window.history.back()}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
-        >
-          ← Kembali ke Halaman Admin
-        </Button>
 
         <div className="space-x-2">
           <button onClick={exportExcel} className="px-4 py-2 rounded bg-green-500 text-white">

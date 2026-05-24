@@ -20,7 +20,7 @@ export default function DashboardPage() {
   
   // Tanggal hari ini hanya untuk referensi visual/history, bukan filter utama
   const [todayDate, setTodayDate] = useState(new Date().toISOString().split('T')[0]);
-
+  const usePhotoAttendance = process.env.NEXT_PUBLIC_FOTO;
   // --- Fetch status hari ini ---
   const fetchStatus = async () => {
     setIsLoading(true);
@@ -118,7 +118,12 @@ export default function DashboardPage() {
   }, [todayDate]);
 
   // --- Tombol handler ---
-  const handleAbsenMasuk = () => router.push('/checkinpage');
+  const handleAbsenMasuk = () => {
+    console.log('Absen Masuk clicked, usePhotoAttendance:', usePhotoAttendance);
+    router.push(
+    usePhotoAttendance ? '/presensi' : '/checkinpage'
+  );
+};
   const handleAbsenPulang = () => { 
     // Izinkan ke halaman checkout jika status Masuk/Terlambat
     // Validasi logbook juga dilakukan di halaman checkout sebagai pengaman ganda

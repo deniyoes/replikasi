@@ -6,7 +6,20 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 
-const OFFICE_LOCATION = { latitude: 5.179003, longitude: 97.149272, RADIUS_M: 2000 };
+const OFFICE_LOCATION: {
+  latitude: number;
+  longitude: number;
+  radius_m: number;
+  city: string;
+} = JSON.parse(
+  process.env.NEXT_PUBLIC_OFFICE_LOCATION || `{
+    "latitude":5.179003,
+    "longitude":97.149272,
+    "radius_m":200,
+    "city":"lhokseumawe"
+  }`
+);
+
 const VALID_LOGBOOK_STATUS = ['COMPLETED'];
 
 export default function CheckOutForm() {
@@ -22,7 +35,8 @@ export default function CheckOutForm() {
   const [logbookStatus, setLogbookStatus] = useState<string | null>(null);
   const [currentShift, setCurrentShift] = useState<'pagi' | 'malam' | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  
+  const [checkInTime, setCheckInTime] = useState<string | null>(null);
+
   // State UI
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +80,7 @@ export default function CheckOutForm() {
           setAddress('Gagal mendapatkan alamat');
         }
 
-        setLocationStatus(dist <= OFFICE_LOCATION.RADIUS_M ? '✅ Lokasi valid (dalam radius kantor)' : '🚫 Di luar radius kantor');
+        setLocationStatus(dist <= OFFICE_LOCATION.radius_m ? '✅ Lokasi valid (dalam radius kantor)' : '🚫 Di luar radius kantor');
       },
       (error) => {
         console.error(error);
@@ -118,7 +132,7 @@ export default function CheckOutForm() {
       const activeShift = activeSessions[0];
       setAttendanceId(activeShift.id);
       setCurrentShift(activeShift.shift as 'pagi' | 'malam');
-
+      setCheckInTime(activeShift.check_in);
       // Cek Logbook berdasarkan ID absen tersebut
       const { data: logbook } = await supabase
         .from('logbooks')
@@ -149,21 +163,44 @@ export default function CheckOutForm() {
     if (!location) return toast.error('Lokasi belum terdeteksi.');
     if (!currentShift) return toast.error('Shift error.');
     
+    if (!checkInTime) {
+        return toast.error('Waktu check-in tidak ditemukan.');
+      }
+
+      const now = new Date();
+      const checkInDate = new Date(checkInTime);
+
+      const workedMilliseconds =
+        now.getTime() - checkInDate.getTime();
+
+      const workedHours =
+        workedMilliseconds / (1000 * 60 * 60);
+
+      if (workedHours < 4) {
+        const remainingMinutes = Math.ceil(
+          (4 - workedHours) * 60
+        );
+
+        return toast.error(
+          `Anda belum bekerja lebih dari 4 jam`
+        );
+      }
+
     if (!logbookStatus || !VALID_LOGBOOK_STATUS.includes(logbookStatus.toUpperCase())) {
       return toast.error('Anda harus mengisi dan Submit Logbook terlebih dahulu!');
     }
       
-    if (distance !== null && distance > OFFICE_LOCATION.RADIUS_M) {
+    if (distance !== null && distance > OFFICE_LOCATION.radius_m ) {
       return toast.error('Anda berada di luar radius kantor.');
     }
 
     setIsSubmitting(true);
     try {
-      const now = new Date();
+      const noww = new Date();
       const { error } = await supabase
         .from('attendances')
         .update({
-          check_out: now.toISOString(),
+          check_out: noww.toISOString(),
           check_out_location: address,
           check_out_latitude: location.lat,
           check_out_longitude: location.lon,
@@ -184,7 +221,7 @@ export default function CheckOutForm() {
 
   const formattedTime = currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const formattedDate = currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const isOutOfRadius = distance !== null && distance > OFFICE_LOCATION.RADIUS_M;
+  const isOutOfRadius = distance !== null && distance > OFFICE_LOCATION.radius_m;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

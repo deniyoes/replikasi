@@ -6,11 +6,19 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 
-const OFFICE_LOCATION = {
-  latitude: 5.179003,
-  longitude: 97.149272,
-  RADIUS_M: 2000,
-};
+const OFFICE_LOCATION: {
+  latitude: number;
+  longitude: number;
+  radius_m: number;
+  city: string;
+} = JSON.parse(
+  process.env.NEXT_PUBLIC_OFFICE_LOCATION || `{
+    "latitude":5.179003,
+    "longitude":97.149272,
+    "radius_m":200,
+    "city":"lhokseumawe"
+  }`
+);
 
 const WIB_OFFSET = 7 * 60 * 60 * 1000;
 const getTodayWIB = () =>
@@ -86,7 +94,7 @@ export default function CheckInPage() {
           setAddress('Gagal mendapatkan alamat');
         }
 
-        if (dist <= OFFICE_LOCATION.RADIUS_M)
+        if (dist <= OFFICE_LOCATION.radius_m)
           setLocationStatus('Lokasi valid (dalam radius kantor)');
         else setLocationStatus('Di luar radius kantor');
       },
@@ -132,7 +140,7 @@ export default function CheckInPage() {
     if (!location) return toast.error('Lokasi belum terdeteksi.');
 
     const isValidLocation =
-      (distance && distance <= OFFICE_LOCATION.RADIUS_M) &&
+      (distance && distance <= OFFICE_LOCATION.radius_m) &&
       (address && address.toLowerCase().includes('lhokseumawe'));
 
     if (!isValidLocation) return toast.error('Lokasi di luar area kantor.');
@@ -261,8 +269,8 @@ export default function CheckInPage() {
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow-md border mb-5">
-          <p className="font-semibold text-gray-700 mb-1">Status Lokasi (max 200m dari kantor ):</p>
-          <p className={`text-sm ${distance && distance <= OFFICE_LOCATION.RADIUS_M ? 'text-green-600' : 'text-red-600'}`}>
+          <p className="font-semibold text-gray-700 mb-1">Status Lokasi (max {OFFICE_LOCATION.radius_m}m dari kantor ):</p>
+          <p className={`text-sm ${distance && distance <= OFFICE_LOCATION.radius_m ? 'text-green-600' : 'text-red-600'}`}>
             {locationStatus}
           </p>
           {distance !== null && (

@@ -16,11 +16,19 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'react-hot-toast';
 
-const OFFICE_LOCATION = {
-  latitude: 5.179003,
-  longitude: 97.149272,
-  RADIUS_M: 2000,
-};
+const OFFICE_LOCATION: {
+  latitude: number;
+  longitude: number;
+  radius_m: number;
+  city: string;
+} = JSON.parse(
+  process.env.NEXT_PUBLIC_OFFICE_LOCATION || `{
+    "latitude":5.179003,
+    "longitude":97.149272,
+    "radius_m":200,
+    "city":"lhokseumawe"
+  }`
+);
 
 const WIB_OFFSET = 7 * 60 * 60 * 1000;
 
@@ -264,7 +272,7 @@ export default function CheckInPage() {
         }
 
         if (
-          dist <= OFFICE_LOCATION.RADIUS_M
+          dist <= OFFICE_LOCATION.radius_m
         ) {
           setLocationStatus(
             'Lokasi valid (dalam radius kantor)'
@@ -451,7 +459,7 @@ export default function CheckInPage() {
     const isValidLocation =
       distance &&
       distance <=
-        OFFICE_LOCATION.RADIUS_M &&
+        OFFICE_LOCATION.radius_m &&
       address
         .toLowerCase()
         .includes('lhokseumawe');
@@ -823,7 +831,7 @@ export default function CheckInPage() {
             className={`text-sm ${
               distance &&
               distance <=
-                OFFICE_LOCATION.RADIUS_M
+                OFFICE_LOCATION.radius_m
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}

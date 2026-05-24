@@ -63,9 +63,9 @@ export default function SplashPage() {
             <h1 className="mt-6 text-3xl font-bold tracking-wider">
                 SMART PPNPN 
             </h1>
-            <h3 className="mt-6 text-3xl font-bold tracking-wider">
-                Sistem Manajemen Akuntabilitas dan Realisasi Kinerja Terintegrasi PPNPN 
-            </h3>
+            <p className="mt-2 text-lg text-white-200" style={{ maxWidth: '400px', textAlign: 'center' }}>
+                Sistem Manajemen Akuntabilitas dan Realisasi Kinerja Terintegrasi PPNPN
+            </p>
             <p className="mt-2 text-lg text-blue-200">
                 KPPN Lhokseumawe
             </p>

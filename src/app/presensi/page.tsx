@@ -22,7 +22,7 @@ const OFFICE_LOCATION: {
   radius_m: number;
   city: string;
 } = JSON.parse(
-  process.env.NEXT_PUBLIC_OFFICE_LOCATION || `{
+  process.env.NEXT_PUBLIC_LOCATION || `{
     "latitude":5.179003,
     "longitude":97.149272,
     "radius_m":200,

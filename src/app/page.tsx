@@ -16,27 +16,49 @@ export default function SplashPage() {
      * Fungsi yang Bertanggung Jawab untuk Mengecek Sesi NYATA Supabase.
      */
     const checkSessionAndRedirect = useCallback(async () => {
-        
         try {
-            // Panggil API Supabase untuk mendapatkan sesi saat ini.
-            // Supabase akan membaca token dari Local Storage.
+            // Ambil session login
             const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                // Sesi ditemukan: Langsung ke Dashboard
-                router.replace('/dashboard');
-            } else {
-                // Sesi tidak ditemukan: Arahkan ke halaman Login
+
+            // Jika belum login
+            if (!session) {
                 router.replace('/login');
+                return;
             }
+
+            // Ambil role dari table profiles
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profileError) {
+                console.error('Gagal mengambil role:', profileError);
+                router.replace('/login');
+                return;
+            }
+
+            // Normalisasi role
+            const role = profile?.role?.toLowerCase();
+
+            // Redirect berdasarkan role
+            if (
+                role === 'admin' ||
+                role === 'kepala_kantor' ||
+                role === 'kasubbag'
+            ) {
+                router.replace('/dashboardadmin');
+            } else {
+                router.replace('/dashboard');
+            }
+
         } catch (error) {
             console.error("Gagal mengecek sesi Supabase:", error);
-            // Jika ada error, tetap arahkan ke login sebagai fallback
             router.replace('/login');
         } finally {
             setIsChecking(false);
         }
-
     }, [router]);
 
     useEffect(() => {

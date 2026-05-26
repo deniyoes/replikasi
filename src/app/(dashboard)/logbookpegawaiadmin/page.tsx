@@ -102,7 +102,10 @@ export default function LogbookPegawaiAdminPage() {
         })
 
       if (showRandomOnly) {
-        query = query.eq('activity_name', 'random')
+        query = query.in('activity_name', [
+          'random',
+          'atensi'
+        ])
       }
 
       const { data, error } = await query
@@ -301,7 +304,7 @@ export default function LogbookPegawaiAdminPage() {
       Shift: r.shift || '-',
       Status: r.status || '-',
       Uraian: r.uraian_kerja || '-',
-      Activity: r.activity_name || 'System'
+      Review: r.activity_name || 'System'
     }))
 
     const wb = XLSX.utils.book_new()
@@ -376,10 +379,10 @@ export default function LogbookPegawaiAdminPage() {
           </button>
           <button
             onClick={handleAtensi}
-            className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded"
+            className="flex items-center gap-2 bg-orange-700 text-white px-4 py-2 rounded"
           >
             <CheckSquare size={18} />
-            Setujui Logbook
+            Atensi Logbook
           </button>
         </div>
       </div>
@@ -453,7 +456,7 @@ export default function LogbookPegawaiAdminPage() {
               <th className="p-2">Tanggal</th>
               <th className="p-2">Shift</th>
               <th className="p-2">Status</th>
-              <th className="p-2">Activity</th>
+              <th className="p-2">Review</th>
               <th className="p-2">Uraian</th>
             </tr>
           </thead>
@@ -513,9 +516,9 @@ export default function LogbookPegawaiAdminPage() {
                 </td>
 
                 <td className="p-2">
-                  {r.activity_name === 'random' ? (
+                  {r.activity_name === 'random' || r.activity_name === 'atensi' ? (
                     <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">
-                      RANDOM
+                      {r.activity_name?.toUpperCase()}
                     </span>
                   ) : r.activity_name ===
                     'pimpinan' ? (

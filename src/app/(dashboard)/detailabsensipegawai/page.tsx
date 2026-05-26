@@ -657,7 +657,7 @@ export default function DetailAbsensiPegawaiPage() {
                                 <td className="p-4 align-top font-medium text-gray-900">{rec.profileName} 
                                     <div className="text-[10px] text-gray-500 uppercase font-semibold tracking-wide">
                                         {rec.profilePosition}</div>
-                                        </td>
+                                </td>
                                 <td className="p-4 align-top">
                                     <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm block w-fit
                                         ${rec.statusCode.includes('H') || rec.statusCode === '2x' ? 'bg-green-100 text-green-700 border-green-200' : 
@@ -683,7 +683,7 @@ export default function DetailAbsensiPegawaiPage() {
                                                          Pukul :  {s.checkIn ? format(new Date(s.checkIn), 'HH:mm') : '-'} WIB
                                                         </div>
                                                         <div className="line-clamp-1">Jarak : {formatDistance(s.checkInDistanceM)}</div>
-                                                        <div className="line-clamp-1">{s.checkInLocation || '-'}</div>
+                                                        <div className="line-clamp">{s.checkInLocation || '-'}</div>
                                                         {s.isLate && (
                                                             <div className="flex items-center justify-center gap-1 text-[10px] text-red-600 font-bold mt-1 bg-red-50 px-1.5 py-0.5 rounded w-fit mx-auto">
                                                                 <AlertCircle className="w-3 h-3"/> Terlambat

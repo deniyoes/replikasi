@@ -389,8 +389,8 @@ export default function CheckInPage() {
   if (!video || !canvas) return;
 
   // 1. TINGKATKAN RESOLUSI
-  const TARGET_WIDTH = 720;
-  const TARGET_HEIGHT = 960;
+  const TARGET_WIDTH = 540;
+  const TARGET_HEIGHT = 720;
 
   canvas.width = TARGET_WIDTH;
   canvas.height = TARGET_HEIGHT;
@@ -429,7 +429,7 @@ export default function CheckInPage() {
   ctx.fillText(shortAddress, 20, TARGET_HEIGHT - 30);
 
   // 5. EKSPOR GAMBAR (Kualitas 0.8 sudah sangat jernih dan tidak pecah)
-  const compressedImage = canvas.toDataURL('image/jpeg', 0.8);
+  const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
 
   setPhoto(compressedImage);
   setCameraOpen(false);
@@ -489,7 +489,7 @@ export default function CheckInPage() {
       const blob =
         await response.blob();
 
-      const fileName = `${userId}-${Date.now()}.jpg`;
+      const fileName = `${userId}_in_${Date.now()}.jpg`;
 
       const { error: uploadError } =
         await supabase.storage

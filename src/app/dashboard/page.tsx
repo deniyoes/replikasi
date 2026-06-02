@@ -119,7 +119,7 @@ export default function DashboardPage() {
 
   // --- Tombol handler ---
   const handleAbsenMasuk = () => {
-    console.log('Absen Masuk clicked, usePhotoAttendance:', usePhotoAttendance);
+    // console.log('Absen Masuk clicked, usePhotoAttendance:', usePhotoAttendance);
     router.push(
     usePhotoAttendance==='true' ? '/presensi' : '/checkinpage'
   );
@@ -127,7 +127,10 @@ export default function DashboardPage() {
   const handleAbsenPulang = () => { 
     // Izinkan ke halaman checkout jika status Masuk/Terlambat
     // Validasi logbook juga dilakukan di halaman checkout sebagai pengaman ganda
-    if (currentShift) router.push('/checkoutform'); 
+    if (currentShift) router.push(
+        usePhotoAttendance==='true' ? '/presensiout' : '/checkoutform'
+    ); 
+
   };
   const handleLogout = async () => { 
     setIsLoggingOut(true); 

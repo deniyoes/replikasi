@@ -2,14 +2,14 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // 1. Siapkan response awal
-  let response = NextResponse.next({
+  // 1. Response awal (JANGAN di-recreate di tengah jalan)
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   })
 
-  // 2. Buat client Supabase dengan Cookie Handler yang benar
+  // 2. Supabase client SSR
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,29 +18,25 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        // FIX: Tambahkan tipe eksplisit { name, value, options } untuk mengatasi error TypeScript
-        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
-          // Loop cookie satu per satu agar Next.js 16 senang
+        setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set({ name, value, ...options })
-          })
-
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set({ name, value, ...options })
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            })
           })
         },
       },
     }
   )
 
-  // 🔐 Ambil user
-  const { data: { user } } = await supabase.auth.getUser()
+  // 🔥 FIX UTAMA: pakai session, bukan getUser()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const user = session?.user ?? null
 
   const url = request.nextUrl.clone()
 
@@ -50,21 +46,28 @@ export async function middleware(request: NextRequest) {
     '/dashboardadmin',
     '/logbook',
     '/rekapabsensi',
-    '/pengajuancuti'
+    '/pengajuancuti',
+    '/datapegawai',
+    '/survei',
+    '/nilaiperilaku',
+    '/raporkinerja',
+    '/rekaplemburadmin',
+    '/approvallembur',
+    '/approvalcuti',
   ]
 
-  const isProtected = protectedPaths.some((path) =>
-    url.pathname.startsWith(path)
-  )
+ const isProtected = protectedPaths.some((path) =>
+  url.pathname === path || url.pathname.startsWith(path + '/')
+)
 
-  // 🚫 Belum login
+  // 🚫 BELUM LOGIN → REDIRECT
   if (isProtected && !user) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
   // ==============================
-  // 🔥 AMBIL ROLE
+  // 🔥 ROLE CHECK (TIDAK DIUBAH LOGICNYA)
   // ==============================
   let role: string | null = null
 
@@ -78,9 +81,6 @@ export async function middleware(request: NextRequest) {
     role = profile?.role ?? null
   }
 
-  // ==============================
-  // 🎯 ROLE MAPPING
-  // ==============================
   const adminRoles = ['admin', 'kepala_kantor', 'kasubbag']
   const userRoles = ['pegawai']
 
@@ -99,31 +99,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // // ==============================
-  // // 🔒 PROTEKSI DASHBOARD ADMIN
-  // // ==============================
-  // if (url.pathname.startsWith('/dashboardadmin')) {
-  //   if (isUser) {
-  //     url.pathname = '/dashboard'
-  //     return NextResponse.redirect(url)
-  //   }
-  // }
-
-  // // ==============================
-  // // 🔒 PROTEKSI DASHBOARD USER
-  // // ==============================
-  // if (url.pathname.startsWith('/dashboard')) {
-  //   if (isAdmin) {
-  //     url.pathname = '/dashboardadmin'
-  //     return NextResponse.redirect(url)
-  //   }
-  // }
-
   return response
 }
 
 export const config = {
-  // Middleware jalan di semua route KECUALI file statis (gambar, css, dll)
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],

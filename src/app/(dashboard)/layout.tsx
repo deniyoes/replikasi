@@ -9,14 +9,33 @@ import { supabase } from "@/lib/supabaseClient";
 import { toast } from "react-hot-toast";
 
 import { LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // 🚨 NOT LOGIN → KICK OUT
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+
+      setChecking(false);
+    };
+
+    checkAuth();
+  }, [router]);
 
   // ==============================
   // LOGOUT
@@ -50,60 +69,37 @@ export default function DashboardLayout({
       );
     }
   };
+  if (checking) {
+    return (
+      <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-800">
+        {/* SIDEBAR */}
+        <Sidebar />
+        {/* CONTENT */}
+        <div className="flex-1 flex flex-col overflow-hidden w-full">
+          {/* HEADER */}
+          <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
+            {/* TITLE */}
+            <div className="text-sm md:text-base font-bold text-slate-700 tracking-wide">
+              KPPN Lhokseumawe
+            </div>
+            {/* LOGOUT */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white transition-all duration-200 px-4 py-2 rounded-lg border border-red-200 hover:border-red-500 shadow-sm"
+            >
+              <LogOut size={18} />
+              <span className="text-sm font-semibold">
+                Logout
+              </span>
+            </button>
+          </header>
+          {/* PAGE */}
 
-  return (
-
-    <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-800">
-
-      {/* SIDEBAR */}
-
-      <Sidebar />
-
-      {/* CONTENT */}
-
-      <div className="flex-1 flex flex-col overflow-hidden w-full">
-
-        {/* HEADER */}
-
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
-
-          {/* TITLE */}
-
-          <div className="text-sm md:text-base font-bold text-slate-700 tracking-wide">
-
-            KPPN Lhokseumawe
-
-          </div>
-
-          {/* LOGOUT */}
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white transition-all duration-200 px-4 py-2 rounded-lg border border-red-200 hover:border-red-500 shadow-sm"
-          >
-
-            <LogOut size={18} />
-
-            <span className="text-sm font-semibold">
-
-              Logout
-
-            </span>
-
-          </button>
-
-        </header>
-
-        {/* PAGE */}
-
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-
-          {children}
-
-        </main>
-
+          <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            {children}
+          </main>
+        </div>
       </div>
-
-    </div>
-  );
+    );
+  }
 }

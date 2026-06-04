@@ -661,9 +661,9 @@ export default function SurveiPage() {
                   <input
                     type="number"
                     min="0"
-                    max="100"
+                    max="10"
                     step="0.01"
-                    placeholder="Contoh 89.50"
+                    placeholder="Contoh 9.5"
                     value={
                       formData.nilai_akhir
                     }

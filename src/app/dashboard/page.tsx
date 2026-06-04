@@ -196,7 +196,7 @@ const handleSubmit = async () => {
   const { data: { user } } = await supabase.auth.getUser();
 
   router.push(
-    `/rapor/${user?.id}&tahun=${tahun}&semester=${semester}`
+    `/rapor/${user?.id}?tahun=${tahun}&semester=${semester}`
   );
 };
 

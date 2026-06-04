@@ -16,26 +16,34 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [checking, setChecking] = useState(true);
+ const [checking, setChecking] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  const checkAuth = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      // 🚨 NOT LOGIN → KICK OUT
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-
+    if (!user) {
+      router.replace("/login");
       setChecking(false);
-    };
+      return;
+    }
 
-    checkAuth();
-  }, [router]);
+    const { data } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    setRole(data?.role ?? null);
+    setChecking(false);
+  };
+
+  checkAuth();
+}, [router]);
 
   // ==============================
   // LOGOUT
@@ -70,6 +78,19 @@ export default function DashboardLayout({
     }
   };
   if (checking) {
+     return (
+        <div className="flex h-screen items-center justify-center bg-slate-50">
+          <div className="text-center">
+            <div className="animate-spin mb-3 h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
+            <p className="text-slate-600 font-medium">
+              Memeriksa sesi login...
+            </p>
+          </div>
+        </div>
+      );
+
+  }
+  else {
     return (
       <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-800">
         {/* SIDEBAR */}

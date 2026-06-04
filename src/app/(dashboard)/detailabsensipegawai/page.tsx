@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabaseClient'
 import XLSX from 'xlsx-js-style' 
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { Image as ImageIcon } from 'lucide-react'
 
 import { 
   ArrowLeft, 
@@ -60,6 +61,8 @@ type ShiftDetail = {
   checkOutLocation: string | null
   checkInDistanceM: string | null
   checkOutDistanceM: string | null
+  checkInPhoto: string | null
+  checkOutPhoto: string | null
   lateMinutes: number
   isLate: boolean
 }
@@ -112,7 +115,7 @@ export default function DetailAbsensiPegawaiPage() {
     checkIn: '',
     checkOut: ''
   })
-
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
   
   // 1. Load Daftar Pegawai
   useEffect(() => {
@@ -183,7 +186,8 @@ export default function DetailAbsensiPegawaiPage() {
         .select(`
             id, user_id, attendance_date, shift, shift_start,
             check_in, check_out, check_in_location, check_out_location, 
-            check_in_distance_m, check_out_distance_m
+            check_in_distance_m, check_out_distance_m,
+            check_in_photo, check_out_photo
         `)
         .gte('attendance_date', startStr)
         .lte('attendance_date', endStr)
@@ -284,6 +288,8 @@ export default function DetailAbsensiPegawaiPage() {
                         checkOutLocation: att.check_out_location,
                         checkInDistanceM: att.check_in_distance_m,
                         checkOutDistanceM: att.check_out_distance_m,
+                        checkInPhoto: att.check_in_photo,
+                        checkOutPhoto: att.check_out_photo,
                         lateMinutes: lateMins,
                         isLate
                     }
@@ -642,11 +648,11 @@ export default function DetailAbsensiPegawaiPage() {
                             <th className="p-4 font-semibold">Nama Pegawai</th>
                             <th className="p-4 font-semibold w-24">Status</th>
                             <th className="p-4 font-semibold w-24">Shift</th>
-                            <th className="p-4 font-semibold bg-slate-900 border-l border-slate-700 text-center">Masuk</th>
+                            <th className="p-4 font-semibold border-l border-slate-700 text-center">Masuk</th>
                             <th className="p-4 font-semibold border-l border-slate-700 text-center">Pulang</th>
-                            <th className="p-4 font-semibold border-l border-slate-700">Aksi</th>
+                            <th className="p-4 font-semibold border-l border-slate-700 text-center">Aksi</th>
                         </tr>
-                    </thead>
+                    </thead> 
                     <tbody className="divide-y divide-gray-100">
                         {dailyRecords.map((rec, idx) => (
                             <tr key={`${rec.profileId}-${idx}`} className={`hover:bg-gray-50 transition-colors ${rec.color}`}>
@@ -676,13 +682,23 @@ export default function DetailAbsensiPegawaiPage() {
                                     {rec.shifts.length > 0 ? (
                                         <div className="divide-y divide-gray-100">
                                             {rec.shifts.map((s, i) => (
-                                                <div key={i} className="grid grid-cols-4">
-                                                    <div className="p-4 text-gray-600 font-medium col-span-1">{s.shiftName}</div>
+                                                <div key={i} className="grid grid-cols-4 border-b last:border-b-0">
+                                                    <div className="p-3 text-gray-500 font-medium text-xs col-span-1">{s.shiftName}</div>
                                                     <div className="p-4 bg-gray-50/80 border-l border-gray-100 col-span-1 text-center">
                                                         <div className="font-mono text-base font-extrabold text-slate-800">
                                                          Pukul :  {s.checkIn ? format(new Date(s.checkIn), 'HH:mm') : '-'} WIB
                                                         </div>
-                                                        <div className="line-clamp-1">Jarak : {formatDistance(s.checkInDistanceM)}</div>
+                                                        <div className="line-clamp-1">
+                                                            {s.checkInPhoto && (
+                                                                <button
+                                                                    onClick={() => setPreviewImage(s.checkInPhoto)}
+                                                                    className="mt-2 flex items-center justify-center mx-auto text-blue-600 hover:text-blue-800"
+                                                                    title="Lihat Foto Check In"
+                                                                >
+                                                                    <ImageIcon className="w-5 h-5" />
+                                                                </button>
+                                                                )}
+                                                            Jarak : {formatDistance(s.checkInDistanceM)}</div>
                                                         <div className="line-clamp">{s.checkInLocation || '-'}</div>
                                                         {s.isLate && (
                                                             <div className="flex items-center justify-center gap-1 text-[10px] text-red-600 font-bold mt-1 bg-red-50 px-1.5 py-0.5 rounded w-fit mx-auto">
@@ -694,8 +710,18 @@ export default function DetailAbsensiPegawaiPage() {
                                                         <div className="font-mono text-base font-bold text-gray-600"> 
                                                           Pukul  {s.checkOut ? format(new Date(s.checkOut), 'HH:mm') : '-'}  WIB
                                                         </div>
-                                                        <div className="line-clamp-1">Jarak : {formatDistance(s.checkOutDistanceM)}</div>
-                                                        <div className="line-clamp-1">{s.checkOutLocation || '-'}</div>
+                                                        <div className="line-clamp-1">
+                                                            {s.checkOutPhoto && (
+                                                                <button
+                                                                    onClick={() => setPreviewImage(s.checkOutPhoto)}
+                                                                    className="mt-2 flex items-center justify-center mx-auto text-green-600 hover:text-green-800"
+                                                                    title="Lihat Foto Check Out"
+                                                                >
+                                                                    <ImageIcon className="w-5 h-5" />
+                                                                </button>
+                                                                )}
+                                                            Jarak : {formatDistance(s.checkOutDistanceM)}</div>
+                                                        <div className="line-clamp">{s.checkOutLocation || '-'}</div>
                                                     </div>
                                                     {/* KOLOM KETERANGAN DENGAN TOMBOL EDIT */}
                                                     <div className="p-4 border-l border-gray-100 col-span-1 text-xs text-gray-500 italic flex justify-between items-center group">
@@ -808,6 +834,24 @@ export default function DetailAbsensiPegawaiPage() {
             </div>
         </div>
       )}
+
+      {previewImage && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4">
+                <div className="relative">
+                <button
+                    onClick={() => setPreviewImage(null)}
+                    className="absolute -top-3 -right-3 bg-white rounded-full p-1"
+                >
+                    <X className="w-5 h-5" />
+                </button>
+
+                <img
+                    src={previewImage}
+                    className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-xl"
+                />
+                </div>
+            </div>
+            )}
     </div>
   )
 }

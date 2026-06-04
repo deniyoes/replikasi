@@ -252,7 +252,7 @@ export default function RaporKinerjaPage() {
               </th>
 
               <th className="p-3">
-                Disiplin
+                Kehadiran
               </th>
 
               <th className="p-3">
@@ -418,7 +418,7 @@ export default function RaporKinerjaPage() {
               </p>
 
               <p>
-                <b>Disiplin:</b>{' '}
+                <b>Kehadiran:</b>{' '}
                 {selected.discipline_score}
               </p>
 

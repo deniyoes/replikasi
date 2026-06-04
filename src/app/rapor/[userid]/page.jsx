@@ -5,13 +5,13 @@ import {
   useParams,
   useSearchParams
 } from 'next/navigation';
-
+import QRCode from 'react-qr-code';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function Page() {
   const params = useParams();
   const searchParams = useSearchParams();
-
+  const [currentUrl, setCurrentUrl] = useState('');
   const userid = params.userid;
   const tahun = searchParams.get('tahun');
   const semester = searchParams.get('semester');
@@ -24,6 +24,11 @@ export default function Page() {
       loadData();
     }
   }, [userid, tahun, semester]);
+
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   async function loadData() {
     try {
@@ -164,7 +169,7 @@ export default function Page() {
 
               <tr>
                 <td className="border p-3">
-                  Disiplin (40%)
+                  Kehadiran (40%)
                 </td>
                 <td className="border p-3 text-center">
                   {rapor.discipline_score}
@@ -173,7 +178,7 @@ export default function Page() {
 
               <tr>
                 <td className="border p-3">
-                  Perilaku (20%)
+                  Nilai Perilaku (20%)
                 </td>
                 <td className="border p-3 text-center">
                   {rapor.behavior_score}
@@ -182,7 +187,7 @@ export default function Page() {
 
               <tr>
                 <td className="border p-3">
-                  Survei (30%)
+                  Survei Kepuasan Pegawai(30%)
                 </td>
                 <td className="border p-3 text-center">
                   {rapor.survey_score}
@@ -191,7 +196,7 @@ export default function Page() {
 
               <tr>
                 <td className="border p-3">
-                  Hasil Sidak KI (10%)
+                  Kepatuhan Internal (10%)
                 </td>
                 <td className="border p-3 text-center">
                   {rapor.ki_score}
@@ -222,39 +227,28 @@ export default function Page() {
 
         </div>
 
-        {/* TTD */}
+        <div className="mt-16">
 
-        <div className="mt-16 grid grid-cols-2 gap-10">
+      {/* QR */}
+      <div className="text-center mb-6">
+        <p className="text-sm">Dicetak pada_ 
+          {new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </p>
+      </div>
 
-          <div className="text-center">
-
-            <p>
-              Kasubbag Umum
-            </p>
-
-            <div className="h-24"></div>
-
-            <p className="font-bold">
-              __________________
-            </p>
-
-          </div>
-
-          <div className="text-center">
-
-            <p>
-              Kepala Kantor
-            </p>
-
-            <div className="h-24"></div>
-
-            <p className="font-bold">
-              __________________
-            </p>
-
-          </div>
-
-        </div>
+      {/* QR CODE */}
+      <div className="flex justify-center mb-10">
+        {currentUrl && (
+          <QRCode value={currentUrl} size={110} />
+        )}
+        <p className="text-sm mb-2 text-left padding-left-2">__SMART PPNPN <br />__(Sistem Monitoring dan Rapor Kinerja PPNPN)</p>
+      </div>
+      </div>
 
         {/* BUTTON */}
 

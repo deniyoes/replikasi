@@ -291,7 +291,7 @@ export default function LogbookPage() {
           </div>
 
           {/* TOMBOL KE LINK CEKLIST RUANGAN */}
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             <label className="text-[10px] font-bold text-gray-400 uppercase">Input Khusus Ruangan:</label>
             <a 
               href={checklistUrl}
@@ -304,7 +304,7 @@ export default function LogbookPage() {
               <ExternalLink size={14} className="opacity-70" />
             </a>
           </div>
-        </div>
+        </div> */}
       )}
 
       {/* ERROR MESSAGE */}

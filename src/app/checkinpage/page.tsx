@@ -16,7 +16,7 @@ const OFFICE_LOCATION: {
     "latitude":5.179003,
     "longitude":97.149272,
     "radius_m":200,
-    "city":"lhokseumawe"
+    "city":"tebing"
   }`
 );
 
@@ -141,7 +141,7 @@ export default function CheckInPage() {
 
     const isValidLocation =
       (distance && distance <= OFFICE_LOCATION.radius_m) &&
-      (address && address.toLowerCase().includes('lhokseumawe'));
+      (address && address.toLowerCase().includes('tebing'));
 
     if (!isValidLocation) return toast.error('Lokasi di luar area kantor.');
 

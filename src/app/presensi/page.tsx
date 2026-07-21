@@ -462,7 +462,7 @@ export default function CheckInPage() {
         OFFICE_LOCATION.radius_m &&
       address
         .toLowerCase()
-        .includes('lhokseumawe');
+        .includes('tebing');
 
     if (!isValidLocation) {
       return toast.error(

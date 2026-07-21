@@ -291,7 +291,20 @@ export default function LogbookPage() {
           </div>
 
           {/* TOMBOL KE LINK CEKLIST RUANGAN */}
-          
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-bold text-gray-400 uppercase">Input Khusus Ruangan:</label>
+            <a 
+              href={checklistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-md shadow-orange-200 transition-all active:scale-95"
+            >
+              <ClipboardCheck size={18} />
+              Buka Form Checklist Ruangan
+              <ExternalLink size={14} className="opacity-70" />
+            </a>
+          </div>
+        </div>
       )}
 
       {/* ERROR MESSAGE */}

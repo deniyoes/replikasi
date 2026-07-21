@@ -16,7 +16,7 @@ const OFFICE_LOCATION: {
     "latitude":5.179003,
     "longitude":97.149272,
     "radius_m":200,
-    "city":"lhokseumawe"
+    "city":"tebing"
   }`
 );
 

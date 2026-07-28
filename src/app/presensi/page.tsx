@@ -536,34 +536,19 @@ export default function CheckInPage() {
 
       let lockTime = '08:00:00';
 
-      if (shift === 'pagi') {
-        if (
-          userPos.includes(
-            'SATPAM'
-          )
-        ) {
-          lockTime =
-            '07:05:00';
-        } else if (
-          userPos.includes('CS')
-        ) {
-          lockTime =
-            '07:30:00';
+     if (shift === 'pagi') {
+        if (userPos.includes('SATPAM')) {
+          lockTime = '06:00:00';   // diubah
+        } else if (userPos.includes('CS')) {
+          lockTime = '07:30:00';
         } else {
-          lockTime =
-            '08:00:00';
+          lockTime = '08:00:00';
         }
       } else {
-        if (
-          userPos.includes(
-            'SATPAM'
-          )
-        ) {
-          lockTime =
-            '18:05:00';
+        if (userPos.includes('SATPAM')) {
+          lockTime = '17:00:00';   // diubah
         } else {
-          lockTime =
-            '19:00:00';
+          lockTime = '19:00:00';
         }
       }
 
